@@ -1,0 +1,519 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الألعاب الفيزيائية الذكية - الإنتاجية القصوى</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #ec4899;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #090d16;
+            --card-bg: #111827;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 25px; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        header { background: var(--card-bg); padding: 20px 30px; border-radius: 18px; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border: 1px solid var(--border); flex-wrap: wrap; gap: 15px; }
+        h1 { color: #818cf8; font-size: 24px; display: flex; align-items: center; gap: 12px; font-weight: 800; }
+        
+        .admin-signature { background: linear-gradient(135deg, #4f46e5, #ec4899); color: white; padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 15px rgba(79,70,229,0.5); letter-spacing: 0.5px; }
+
+        .nav-buttons button { background: #1f2937; color: var(--text); border: none; padding: 11px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-left: 10px; transition: 0.3s; font-size: 14px; }
+        .nav-buttons button.active, .nav-buttons button:hover { background: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+
+        .controls-bar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .search-input, .filter-select { flex-grow: 1; padding: 14px 20px; background: var(--card-bg); border: 1px solid var(--border); color: white; border-radius: 12px; outline: none; font-size: 15px; transition: 0.3s; }
+        .search-input:focus, .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .game-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.3); border: 1px solid var(--border); display: flex; flex-direction: column; transition: 0.3s; position: relative; }
+        .game-card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 12px 25px rgba(79,70,229,0.2); }
+        .game-thumb { height: 180px; background: #070a12; display: flex; align-items: center; justify-content: center; font-size: 55px; position: relative; }
+        .physics-tag { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.8); color: #38bdf8; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid rgba(56,189,248,0.3); }
+        .game-info { padding: 22px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; text-align: center; text-decoration: none; display: inline-block; transition: 0.3s; font-size: 14px; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); color: #000; }
+
+        .card { background: var(--card-bg); padding: 35px; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        h2 { font-size: 22px; margin-bottom: 25px; color: #e2e8f0; border-bottom: 2px solid var(--border); padding-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+
+        .alert { padding: 16px 20px; border-radius: 12px; margin-bottom: 25px; font-weight: bold; font-size: 15px; display: none; }
+        .alert.success { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid var(--success); display: block; }
+        .alert.error { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid var(--danger); display: block; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-muted); }
+        input[type="text"], input[type="password"], select { width: 100%; padding: 14px; background: #090d16; border: 1px solid var(--border); color: white; border-radius: 10px; outline: none; font-size: 15px; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 16px; text-align: center; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: #090d16; color: var(--text-muted); font-weight: 700; }
+
+        .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .badge.pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .badge.approved { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+        #playerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 25px; }
+        .player-box { width: 100%; max-width: 1100px; height: 88vh; background: #000; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+        .player-header { background: var(--card-bg); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .player-frame { flex-grow: 1; border: none; width: 100%; background: white; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 25px; }
+        .feature-box { background: #090d16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .feature-box h4 { color: #38bdf8; margin-bottom: 8px; font-size: 16px; }
+        .feature-box p { color: var(--text-muted); font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚡ المنصة الفيزيائية الذكية المتكاملة</h1>
+        <div class="admin-signature">إدارة وتطوير أبو العز العمري</div>
+        <div class="nav-buttons">
+            <button id="navHome" class="active" onclick="switchTab('home')">الرئيسية والألعاب 🎮</button>
+            <button id="navDev" onclick="switchTab('dev')">بوابة المطورين والـ API 🔌</button>
+            <button id="navAdmin" onclick="switchTab('admin')">لوحة تحكم الإدارة الآمنة 🛡️</button>
+        </div>
+    </header>
+
+    <div id="alertBox" class="alert"></div>
+
+    <div id="tabHome">
+        <div class="controls-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث في الألعاب الفيزيائية والحسابية..." oninput="loadPublicGames()">
+            <select id="physicsFilter" class="filter-select" onchange="loadPublicGames()">
+                <option value="">جميع المحركات الفيزيائية</option>
+                <option value="Box2D.js">Box2D.js (ثنائي الأبعاد)</option>
+                <option value="Matter.js">Matter.js (محاكاة اصطدام)</option>
+                <option value="Cannon.js">Cannon.js (ثلاثي الأبعاد)</option>
+            </select>
+        </div>
+        <div class="games-grid" id="gamesGrid"></div>
+    </div>
+
+    <!-- تبويب المطورين (يتطلب تسجيل الدخول حتماً للرفع) -->
+    <div id="tabDev" style="display: none;">
+        <div class="card" id="devAuthCard">
+            <h2>🔌 بوابة المطورين - تسجيل الدخول أو إنشاء حساب جديد</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px;">
+                <div style="background: #090d16; padding: 25px; border-radius: 14px; border: 1px solid var(--border);">
+                    <h3 style="color: #38bdf8; margin-bottom: 15px; font-size: 16px;">تسجيل دخول مطور حالي:</h3>
+                    <form onsubmit="devLogin(event)">
+                        <div class="form-group"><label>اسم المستخدم:</label><input type="text" id="devLoginUser" required></div>
+                        <div class="form-group"><label>كلمة السر:</label><input type="password" id="devLoginPass" required></div>
+                        <button type="submit" class="btn">دخول المطورين</button>
+                    </form>
+                </div>
+                <div style="background: #090d16; padding: 25px; border-radius: 14px; border: 1px solid var(--border);">
+                    <h3 style="color: #34d399; margin-bottom: 15px; font-size: 16px;">إنشاء حساب مطور جديد:</h3>
+                    <form onsubmit="devRegister(event)">
+                        <div class="form-group"><label>اسم المستخدم الجديد:</label><input type="text" id="devRegUser" required></div>
+                        <div class="form-group"><label>كلمة السر الجديدة:</label><input type="password" id="devRegPass" required></div>
+                        <button type="submit" class="btn btn-success">تسجيل الحساب</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="devUploadCard" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2>🚀 رفع لعبة فيزيائية جديدة (أنت مسجل كـ: <span id="currentDevName" style="color: #38bdf8;"></span>)</h2>
+                <button class="btn btn-danger" onclick="devLogout()" style="padding: 6px 15px; font-size: 12px;">تسجيل خروج المطور 🔒</button>
+            </div>
+            <form onsubmit="submitGame(event)">
+                <div class="form-group"><label>عنوان اللعبة:</label><input type="text" id="devTitle" required placeholder="مثال: محاكي الجاذبية الفضائية"></div>
+                <div class="form-group"><label>التصنيف:</label>
+                    <select id="devCat">
+                        <option value="Action">حركة وفيزياء (Action)</option>
+                        <option value="Racing">محاكاة وسيارات (Racing)</option>
+                        <option value="Puzzle">ألغاز ومنطق (Puzzle)</option>
+                        <option value="Simulation">محاكاة متقدمة (Simulation)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>محرك الفيزياء الداخلي:</label>
+                    <select id="devPhysics">
+                        <option value="Box2D.js">Box2D.js (Standard)</option>
+                        <option value="Matter.js">Matter.js (Advanced Collisions)</option>
+                        <option value="Cannon.js">Cannon.js (3D Physics)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>معدل الجاذبية الأرضية (Gravity Scale):</label>
+                    <input type="text" id="devGravity" value="9.8" required>
+                </div>
+                <div class="form-group"><label>رابط اللعبة المباشر (URL):</label><input type="text" id="devUrl" placeholder="https://..." required></div>
+                <button type="submit" class="btn">إرسال اللعبة للمراجعة والتحليل الخوارزمي</button>
+            </form>
+
+            <div style="margin-top: 35px; background: #090d16; padding: 25px; border-radius: 14px; border: 1px solid var(--border);">
+                <h3 style="color: #38bdf8; font-size: 18px; margin-bottom: 12px;">طريقة التطوير والربط الخارجي للمطورين (External API SDK):</h3>
+                <code style="display: block; background: #111827; padding: 15px; border-radius: 8px; color: #34d399; font-size: 13px; line-height: 1.7;" dir="ltr">
+                    POST http://localhost:3000/api/v1/external/submit<br>
+                    Headers: { "Content-Type": "application/json" }<br>
+                    Body: { "apiKey": "ABU_ELIZ_MASTER_EXTERNAL_API_KEY_2026", "title": "Game", "category": "Action", "gameUrl": "..." }
+                </code>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم الإدارة -->
+    <div id="tabAdmin" style="display: none;">
+        <div class="card" id="adminAuthCard">
+            <h2>🛡️ تسجيل دخول الإدارة الحصين (محمي بـ bcrypt)</h2>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label>كلمة السر الإدارية:</label>
+                    <input type="password" id="adminPassInput" required placeholder="أدخل كلمة السر الخاصة بالإدارة...">
+                </div>
+                <button type="submit" class="btn">تأكيد ودخول آمن</button>
+            </form>
+        </div>
+
+        <div class="card" id="adminPanelCard" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                <h2>لوحة الإدارة الشاملة - مركز العمليات والتحكم</h2>
+                <div>
+                    <button class="btn btn-warning" onclick="loadAuditLogs()">سجل الأحداث والخوادم 📊</button>
+                    <button class="btn btn-danger" onclick="adminLogout()" style="margin-right: 10px;">تسجيل خروج 🔒</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-bottom: 30px;" id="serverStatsBox"></div>
+
+            <form onsubmit="changePassword(event)" style="background: #090d16; padding: 25px; border-radius: 14px; margin-bottom: 30px; border: 1px solid var(--border);">
+                <h3 style="font-size: 17px; margin-bottom: 15px; color: #f43f5e;">تغيير وتشفير كلمة السر (أمان معقد للغاية):</h3>
+                <div class="form-group"><label>كلمة السر الحالية:</label><input type="password" id="currPass" required></div>
+                <div class="form-group"><label>كلمة السر الجديدة (12+ خانة + رموز وأرقام وحروف كبيرة وصغيرة):</label><input type="password" id="newPass" required></div>
+                <button type="submit" class="btn btn-success">تحديث التشفير الفوري</button>
+            </form>
+
+            <h3 style="font-size: 18px; margin-bottom: 15px; color: #38bdf8;">إدارة واعتماد الألعاب في النظام:</h3>
+            <table>
+                <thead>
+                    <tr><th>عنوان اللعبة</th><th>التصنيف</th><th>محرك الفيزياء</th><th>الحالة</th><th>الإجراءات الأمنية</th></tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- المميزات الـ 10 الضخمة المدمجة في المنصة -->
+    <div class="card" style="margin-top: 40px; background: #0b111e;">
+        <h2>💎 المميزات الـ 10 الضخمة المدمجة في المنصة</h2>
+        <div class="features-grid">
+            <div class="feature-box"><h4>1. تشفير Passwords (bcrypt)</h4><p>حماية مطلقة بكلمات سر مشفرة كلياً ومصعبة ضد أي كسر.</p></div>
+            <div class="feature-box"><h4>2. محرك فيزياء حقيقي</h4><p>حسابات جاذبية وتصادمات دقيقة (Box2D & Matter.js).</p></div>
+            <div class="feature-box"><h4>3. حماية Rate Limiting</h4><p>تصدٍ فوري لهجمات القوة العمياء واختبارات الـ API الآمنة.</p></div>
+            <div class="feature-box"><h4>4. بوابة API للمطورين</h4><p>ربط ونشر الألعاب من خوادم خارجية برمجياً بشكل آلي بالكامل.</p></div>
+            <div class="feature-box"><h4>5. مراقبة الأداء الحية</h4><p>تتبع استهلاك الذاكرة العشوائية وUptime للسيرفر بذكاء.</p></div>
+            <div class="feature-box"><h4>6. سجلات الأمان (Audit Logs)</h4><p>تدقيق كامل لكل عملية دخول أو رفع لعبة مع تتبع الـ IP.</p></div>
+            <div class="feature-box"><h4>7. واجهة عصرية متجاوبة</h4><p>تصميم أنيق بألوان داكنة وأزرار تفاعلية حية سلسة.</p></div>
+            <div class="feature-box"><h4>8. نظام تصفية ذكي</h4><p>بحث فوري وفلترة الألعاب حسب المحرك والتصنيف بدقة.</p></div>
+            <div class="feature-box"><h4>9. مشغل آمن داخل المنصة</h4><p>تشغيل الألعاب في بيئة معزولة وآمنة تماماً للمستخدمين.</p></div>
+            <div class="feature-box"><h4>10. إشراف وتطوير حصري</h4><p>نظام متكامل يحمل توقيع وتصميم الخبير أبو العز العمري.</p></div>
+        </div>
+    </div>
+</div>
+
+<div id="playerModal">
+    <div class="player-box">
+        <div class="player-header">
+            <span id="playerGameTitle" style="font-weight: bold; font-size: 16px;"></span>
+            <button class="btn btn-danger" onclick="closePlayer()" style="padding: 6px 15px; font-size: 12px;">إغلاق ✕</button>
+        </div>
+        <iframe id="gameIframe" class="player-frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    </div>
+</div>
+
+<script>
+    function showAlert(msg, type = 'success') {
+        const box = document.getElementById('alertBox');
+        box.className = 'alert ' + type;
+        box.innerHTML = msg;
+        setTimeout(() => { box.className = 'alert'; }, 5500);
+    }
+
+    function switchTab(tab) {
+        document.getElementById('tabHome').style.display = tab === 'home' ? 'block' : 'none';
+        document.getElementById('tabDev').style.display = tab === 'dev' ? 'block' : 'none';
+        document.getElementById('tabAdmin').style.display = tab === 'admin' ? 'block' : 'none';
+        if(tab === 'home') loadPublicGames();
+        if(tab === 'dev') checkDevState();
+        if(tab === 'admin') checkAdminState();
+    }
+
+    async function loadPublicGames() {
+        const physics = document.getElementById('physicsFilter').value;
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        
+        let url = '/api/games?status=approved';
+        if(physics) url += `&physics=${physics}`;
+
+        const res = await fetch(url);
+        const games = await res.json();
+        const grid = document.getElementById('gamesGrid');
+
+        let filtered = games.filter(g => g.title.toLowerCase().includes(search));
+
+        if(filtered.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">لا توجد ألعاب مطابقة للبحث أو معتمدة حالياً.</p>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(g => `
+            <div class="game-card">
+                <div class="game-thumb">
+                    🎮
+                    <span class="physics-tag">${g.physics_engine}</span>
+                </div>
+                <div class="game-info">
+                    <div>
+                        <b style="font-size: 17px; color: #fff;">${g.title}</b>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">التصنيف: ${g.cat} | الجاذبية: ${g.gravity_scale}G</div>
+                        <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">المطور: ${g.developer_tag}</div>
+                    </div>
+                    <button class="btn" style="margin-top: 18px;" onclick="playGame('${g.title}', '${g.url}')">العب الآن ⚡</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function playGame(title, url) {
+        document.getElementById('playerGameTitle').textContent = title;
+        document.getElementById('gameIframe').src = url;
+        document.getElementById('playerModal').style.display = 'flex';
+    }
+
+    function closePlayer() {
+        document.getElementById('playerModal').style.display = 'none';
+        document.getElementById('gameIframe').src = '';
+    }
+
+    // إدارة تسجيل دخول المطورين
+    let currentDeveloper = localStorage.getItem('dev_user') || '';
+
+    function checkDevState() {
+        const isLogged = currentDeveloper !== '';
+        document.getElementById('devAuthCard').style.display = isLogged ? 'none' : 'block';
+        document.getElementById('devUploadCard').style.display = isLogged ? 'block' : 'none';
+        if(isLogged) {
+            document.getElementById('currentDevName').textContent = currentDeveloper;
+        }
+    }
+
+    async function devRegister(e) {
+        e.preventDefault();
+        const res = await fetch('/api/dev/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: document.getElementById('devRegUser').value,
+                password: document.getElementById('devRegPass').value
+            })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            showAlert(data.message);
+            document.getElementById('devRegUser').value = '';
+            document.getElementById('devRegPass').value = '';
+        } else {
+            showAlert(data.error, 'error');
+        }
+    }
+
+    async function devLogin(e) {
+        e.preventDefault();
+        const user = document.getElementById('devLoginUser').value;
+        const pass = document.getElementById('devLoginPass').value;
+        const res = await fetch('/api/dev/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+        if(data.success) {
+            currentDeveloper = user;
+            localStorage.setItem('dev_user', user);
+            showAlert(data.message);
+            checkDevState();
+        } else {
+            showAlert(data.message, 'error');
+        }
+    }
+
+    function devLogout() {
+        currentDeveloper = '';
+        localStorage.removeItem('dev_user');
+        showAlert("تم تسجيل خروج المطور بأمان.");
+        checkDevState();
+    }
+
+    async function submitGame(e) {
+        e.preventDefault();
+        if(!currentDeveloper) {
+            showAlert("يجب تسجيل الدخول أولاً كمتطور لكي تتمكن من رفع اللعبة!", "error");
+            return;
+        }
+
+        const res = await fetch('/api/games', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: document.getElementById('devTitle').value,
+                cat: document.getElementById('devCat').value,
+                physics_engine: document.getElementById('devPhysics').value,
+                gravity_scale: parseFloat(document.getElementById('devGravity').value) || 9.8,
+                url: document.getElementById('devUrl').value,
+                developer: currentDeveloper
+            })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            showAlert(data.message);
+            document.getElementById('devTitle').value = '';
+            document.getElementById('devUrl').value = '';
+            switchTab('home');
+        } else {
+            showAlert(data.error, 'error');
+        }
+    }
+
+    let isAdminLoggedIn = localStorage.getItem('is_admin') === 'true';
+
+    function checkAdminState() {
+        document.getElementById('adminAuthCard').style.display = isAdminLoggedIn ? 'none' : 'block';
+        document.getElementById('adminPanelCard').style.display = isAdminLoggedIn ? 'block' : 'none';
+        if(isAdminLoggedIn) {
+            loadAdminTable();
+            loadServerStats();
+        }
+    }
+
+    async function adminLogin(e) {
+        e.preventDefault();
+        const pass = document.getElementById('adminPassInput').value;
+        const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ password: pass })
+        });
+        const data = await res.json();
+        if(data.success) {
+            isAdminLoggedIn = true;
+            localStorage.setItem('is_admin', 'true');
+            showAlert(data.message);
+            checkAdminState();
+        } else {
+            showAlert(data.message, 'error');
+        }
+    }
+
+    function adminLogout() {
+        isAdminLoggedIn = false;
+        localStorage.setItem('is_admin', 'false');
+        showAlert("تم تسجيل خروج الإدارة بأمان.");
+        checkAdminState();
+    }
+
+    async function changePassword(e) {
+        e.preventDefault();
+        const res = await fetch('/api/admin/change-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                currentPassword: document.getElementById('currPass').value,
+                newPassword: document.getElementById('newPass').value
+            })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            showAlert(data.message);
+            document.getElementById('currPass').value = '';
+            document.getElementById('newPass').value = '';
+        } else {
+            showAlert(data.error, 'error');
+        }
+    }
+
+    async function loadServerStats() {
+        const res = await fetch('/api/admin/stats');
+        const stats = await res.json();
+        const box = document.getElementById('serverStatsBox');
+        box.innerHTML = `
+            <div style="background:#090d16; padding:18px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <div style="font-size:13px; color:var(--text-muted);">إجمالي الألعاب</div>
+                <div style="font-size:24px; font-weight:bold; color:#818cf8; margin-top:6px;">${stats.totalGames}</div>
+            </div>
+            <div style="background:#090d16; padding:18px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <div style="font-size:13px; color:var(--text-muted);">بانتظار المراجعة</div>
+                <div style="font-size:24px; font-weight:bold; color:#fbbf24; margin-top:6px;">${stats.pendingGames}</div>
+            </div>
+            <div style="background:#090d16; padding:18px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <div style="font-size:13px; color:var(--text-muted);">الألعاب المقبولة</div>
+                <div style="font-size:24px; font-weight:bold; color:#34d399; margin-top:6px;">${stats.approvedGames}</div>
+            </div>
+            <div style="background:#090d16; padding:18px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <div style="font-size:13px; color:var(--text-muted);">استهلاك الذاكرة</div>
+                <div style="font-size:20px; font-weight:bold; color:#38bdf8; margin-top:6px;">${stats.activeMemory}</div>
+            </div>
+        `;
+    }
+
+    async function loadAdminTable() {
+        const res = await fetch('/api/games');
+        const games = await res.json();
+        const tbody = document.getElementById('adminTableBody');
+
+        tbody.innerHTML = games.map(g => `
+            <tr>
+                <td><b style="color:#fff;">${g.title}</b><div style="font-size:11px; color:var(--text-muted);">المطور: ${g.developer_tag}</div></td>
+                <td>${g.cat}</td>
+                <td><span style="color:#38bdf8; font-size:13px;">${g.physics_engine}</span></td>
+                <td><span class="badge ${g.status}">${g.status}</span></td>
+                <td>
+                    <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="playGame('${g.title}', '${g.url}')">معاينة</button>
+                    ${g.status === 'pending' ? `
+                        <button class="btn btn-success" style="padding:6px 12px; font-size:12px; margin-right:5px;" onclick="updateStatus(${g.id}, 'approved')">قبول</button>
+                        <button class="btn btn-danger" style="padding:6px 12px; font-size:12px; margin-right:5px;" onclick="updateStatus(${g.id}, 'rejected')">رفض</button>
+                    ` : ''}
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function updateStatus(id, status) {
+        await fetch(`/api/games/${id}`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ status })
+        });
+        loadAdminTable();
+        loadServerStats();
+        showAlert("تم تحديث حالة اللعبة بنجاح.");
+    }
+
+    async function loadAuditLogs() {
+        const res = await fetch('/api/admin/logs');
+        const logs = await res.json();
+        let logText = logs.map(l => `[${l.timestamp}] ${l.action_type}: ${l.description} (IP: ${l.ip_address})`).join('\n');
+        alert("--- أحدث سجلات الأمان والنشاط في الخادم ---\n\n" + logText);
+    }
+
+    loadPublicGames();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+﻿{
+  "name": "physicsgameplatform",
+  "version": "1.0.0",
+  "description": "منصة الألعاب الفيزيائية الذكية المتكاملة",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "physics",
+    "games",
+    "express",
+    "sqlite"
+  ],
+  "author": "أبو العز العمري",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "sqlite3": "^6.0.1"
+  }
+}
