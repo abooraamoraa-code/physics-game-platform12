@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
@@ -167,6 +167,39 @@ app.post('/api/admin/login', (req, res) => {
             res.status(401).json({ success: false, message: 'كلمة سر الإدارة غير صحيحة.' });
         }
     });
+});
+
+// مسار تغيير كلمة مرور الإدارة
+app.post('/api/admin/change-password', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    db.get(`SELECT value FROM settings WHERE key = 'admin_pass'`, async (err, row) => {
+        if (err || !row) return res.status(500).json({ error: 'خطأ في النظام.' });
+        const match = await bcrypt.compare(currentPassword, row.value);
+        if (!match) return res.status(401).json({ error: 'كلمة السر الحالية غير صحيحة.' });
+        
+        const hashedNew = await bcrypt.hash(newPassword, 10);
+        db.run(`UPDATE settings SET value = ? WHERE key = 'admin_pass'`, [hashedNew], (updateErr) => {
+            if (updateErr) return res.status(500).json({ error: 'فشل تحديث كلمة السر.' });
+            db.run(`INSERT INTO audit_logs (action_type, description, ip_address) VALUES ('CHANGE_PASSWORD', 'تم تغيير كلمة سر الإدارة بنجاح', ?)`, [req.ip]);
+            res.json({ success: true, message: 'تم تحديث وتشفير كلمة السر بنجاح!' });
+        });
+    });
+});
+
+// مسار استقبال الألعاب عبر الـ API الخارجي
+app.post('/api/v1/external/submit', (req, res) => {
+    const { apiKey, title, category, gameUrl } = req.body;
+    if (apiKey !== 'ABU_ELIZ_MASTER_EXTERNAL_API_KEY_2026') {
+        return res.status(403).json({ error: 'مفتاح الـ API غير صالح.' });
+    }
+    if (!title || !gameUrl) return res.status(400).json({ error: 'العنوان ورابط اللعبة مطلوبان.' });
+
+    db.run(`INSERT INTO games (title, cat, physics_engine, gravity_scale, url, status, developer_tag) VALUES (?, ?, 'Box2D.js', 9.8, ?, 'pending', 'External API')`,
+        [title, category || 'Action', gameUrl], function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ success: true, message: 'تم استلام اللعبة عبر الـ API بنجاح وإرسالها للمراجعة.' });
+        }
+    );
 });
 
 // إحصائيات الخادم للإدارة
