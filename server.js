@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// إنشاء والاتصال بقاعدة البيانات SQLite محلياً
+// إنشاء والاتصال بقاعدة البيانات SQLite بشكل آمن يتوافق مع Render
 const dbFile = path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbFile, (err) => {
     if (err) console.error('خطأ في الاتصال بقاعدة البيانات:', err.message);
@@ -103,7 +104,7 @@ app.post('/api/dev/register', async (req, res) => {
         const hashedPass = await bcrypt.hash(password, 10);
         db.run(`INSERT INTO developers (username, password) VALUES (?, ?)`, [username, hashedPass], function(err) {
             if (err) return res.status(400).json({ error: 'اسم المستخدم للمطور موجود مسبقاً.' });
-            res.json({ success: true, message: 'تم تسسجيل حساب المطور بنجاح!' });
+            res.json({ success: true, message: 'تم تسجيل حساب المطور بنجاح!' });
         });
     } catch (ex) {
         res.status(500).json({ error: 'خطأ داخلي في الخادم.' });
